@@ -9,11 +9,11 @@ At this point our implementation allows one to:
 
 2) Do composition, reduction and normalization of binary quadratic forms
 
-3) The main.c code runs a small example of the above
+3) Construct a DDH-DLP Group for p = 3 and q = 13 i.e. the class group of discriminant -39
 
+4) The main.c code runs a example of the above operations. For the example we use the class group of discriminant -23. 
 
-
-The part of the implementation that is not quite finished is being able to move between the class groups of the maximal and non-maximal order.
-The reason this is a obsticale, is handling the definitive positive quadratic form which is moved into the class group of the non-maximal order. 
-As future work we wish to use the PARI computer algebra system to handle this. To our knowledge this is the standard when implementing algebraic constructs. https://pari.math.u-bordeaux.fr
-
+The reason why the DDH-DLP group is fixed for the above p and q, is because we need to solve a two variable equation when
+moving the generator of the DDH group into the class group of the non-maximal order. Furthermore, we need to find the integer solutions.
+We hvaent been able to create such a equation solver, as furture work we would adapt the methods of the PARI framework for algebraic implementations.
+https://pari.math.u-bordeaux.fr
