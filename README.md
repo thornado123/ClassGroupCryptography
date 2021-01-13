@@ -11,7 +11,8 @@ At this point our implementation allows one to:
 
 3) Construct a DDH-DLP Group for p = 3 and q = 13 i.e. the class group of discriminant -39
 
-4) The main.c code runs a example of the above operations. For the example we use the class group of discriminant -23. 
+4) The main.c code runs a example of the above operations. For the example we use the class group of discriminant -23.
+   We also run the DDH-DLP Group generator.
 
 The reason why the DDH-DLP group is fixed for the above p and q, is because we need to solve a two variable equation when
 moving the generator of the DDH group into the class group of the non-maximal order. Furthermore, we need to find the integer solutions.
