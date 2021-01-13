@@ -76,13 +76,13 @@ int jacobi(int n, int k) {
  */
 int discriminantOfQF(QUADRATIC_FORM * qf){
     
-    int discriminant = 4 * qf->a * qf->c - qf->b * qf-> b;
+    int discriminant = qf->b * qf->b - 4 * qf->a * qf->c;
     return discriminant;
     
 }
 
 int primes[2048] = {
-    2,     3,     5,     7,     11,    13,    17,    19,    23,    29,    31,
+    2,     3,     5,     7,     11,    13,    19,    23,    29,    31,
     37,    41,    43,    47,    53,    59,    61,    67,    71,    73,    79,
     83,    89,    97,    101,   103,   107,   109,   113,   127,   131,   137,
     139,   149,   151,   157,   163,   167,   173,   179,   181,   191,   193,
@@ -290,10 +290,10 @@ void DDH_DLP_LES::gen(int p, int q, DDH_DLP_GROUP *group){
      
      */
     
-    p = 13;
-    q = 53;
+    p = 3;
+    q = 13;
     
-    int delta_k = p*q;
+    int delta_k = -1*p*q;
     int delta_p = pow(p, 2) * delta_k;
     
     std::cout<<"DELTA_K: "<< delta_k << "\n";
@@ -301,7 +301,7 @@ void DDH_DLP_LES::gen(int p, int q, DDH_DLP_GROUP *group){
     
     /*
      
-        The DDH DLP group
+        The easy DLP group
      
      */
     
@@ -313,24 +313,32 @@ void DDH_DLP_LES::gen(int p, int q, DDH_DLP_GROUP *group){
      
      */
     QUADRATIC_FORM f_dlp;
-    F.setDLPGenerator(&f_dlp);
+    
     f_dlp.a = pow(p, 2);
     f_dlp.b = p;
-    f_dlp.c = (pow(f_dlp.b, 2) - delta_p)/(4*f_dlp.a);
+    f_dlp.c = (1-1*delta_k)/(4);
+        
+    F.setDiscriminant(delta_p);
+    F.setGenerator(&f_dlp);
+
+    group->f_of_kernel = &F;
+    
     
     printf("EASY DLP GENERATOR: (%d,%d,%d)\n",f_dlp.a,f_dlp.b,f_dlp.c);
     printf("Discriminant of the generator: %d\n", discriminantOfQF(&f_dlp));
 
     /*
      
-        We can now generate the generator of the DDH group
+     The DDH group
+     
+     We can now generate the generator of the DDH group
+     We whish to find a prime r whit the Kronocker symbol of 1 with the discriminant:
+     Delta_k
      
      */
     
-    QUADRATIC_FORM f;
-    F.setGenerator(&f);
-    // We whish to find a prime r whit the Kronocker symbol of 1 with the discriminant:
-    // Delta_k
+    QF_CG F_DDH;
+    
     int r = 0;
     for(int i = 0; i < 2048; i++)
     {
@@ -343,6 +351,62 @@ void DDH_DLP_LES::gen(int p, int q, DDH_DLP_GROUP *group){
     
     if(r != 0)
     {
+        printf("Generating the generator of the DDH group\n");
+        /*
+         
+         We will now create a prime binary qudratic form: Where the first cofficient is
+         r and discriminant delta_k. This is where the PARI framework would be handy.
+         
+         Because this is just an example we just calculate it
+         We are solving the equation b^2-4*41*c = delta_k: b^2-4*41*c = -39
+         The solutions takes the form b = 82n+17, c = 41n^2+17n+2 for a integer n
+         We use n = 1, so that the final form is positive definitive
+         Which gives us: b = 99, c = 60
+         
+         */
+        
+        printf("We calculate r to be: %d\n", r);
+
+        QUADRATIC_FORM f;
+        
+        f.a = r;
+        f.b = 99;
+        f.c = 60;
+        
+        // We now normalize f
+        
+        F_DDH.normalize(&f);
+        F_DDH.reduce(&f);
+        
+        printf("The element that we now will move into the class group of the non-maximal order:");
+        printElements(&f);
+        
+        // We now square f and reduce the result
+        QUADRATIC_FORM f_squared;
+        F_DDH.compose(&f, &f, &f_squared);
+        
+        printf("The squared version of our element:");
+        printElements(&f_squared);
+        
+        // We are now ready to apply the map, and lift f into the class group of the
+        // non-maximal order
+        
+        int b_conductor = f_squared.b * p;
+        int b_new = b_conductor % (f_squared.a*f_squared.a);
+        
+        QUADRATIC_FORM f_sqr_non_max;
+        f_sqr_non_max.a = f_squared.a;
+        f_sqr_non_max.b = b_new;
+        f_sqr_non_max.c = (pow(f_sqr_non_max.b, 2) - delta_p)/(4*f_sqr_non_max.a);
+        
+        F_DDH.reduce(&f_sqr_non_max);
+        
+        printf("DDH GENERATOR: (%d,%d,%d)\n",f_sqr_non_max.a,f_sqr_non_max.b,f_sqr_non_max.c);
+        printf("Discriminant of the generator: %d\n", discriminantOfQF(&f_sqr_non_max));
+        
+        
+        F_DDH.setGenerator(&f_sqr_non_max);
+        F_DDH.setDiscriminant(delta_p);
         
     }
     else

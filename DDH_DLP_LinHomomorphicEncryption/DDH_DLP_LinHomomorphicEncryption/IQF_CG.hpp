@@ -10,7 +10,6 @@
 class QF_CG {
     
     QUADRATIC_FORM * generator;
-    QUADRATIC_FORM * dlp_generator;
     int discriminant;
     
 public:
@@ -22,6 +21,7 @@ public:
     bool isReduced(QUADRATIC_FORM *element);
     void reduce(QUADRATIC_FORM * element);
     void compose(QUADRATIC_FORM *leftElement, QUADRATIC_FORM *rightElement, QUADRATIC_FORM *result);
+    void square(QUADRATIC_FORM *element, QUADRATIC_FORM *result);
     
 };
 

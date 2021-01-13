@@ -13,13 +13,13 @@ void QF_CG::setGenerator(QUADRATIC_FORM *element){
 
 /*
  
-    Setting the generator of easy DLP group CL
+    Setting the discriminat of the CL
  
  */
 
-void QF_CG::setDLPGenerator(QUADRATIC_FORM *element){
+void QF_CG::setDiscriminant(int discriminant_d){
     
-    dlp_generator = element;
+    discriminant = discriminant_d;
     
 }
 
@@ -193,7 +193,8 @@ generalSolutionCongruence solveCongruence(int a, int b, int n){
     Take three element pointers a do BQF composition on the two first and return the result in the last
  
  */
-void QF_CG::compose(QUADRATIC_FORM *leftElement, QUADRATIC_FORM *rightElement, QUADRATIC_FORM *result){
+void QF_CG::compose(QUADRATIC_FORM *leftElement, QUADRATIC_FORM *rightElement, QUADRATIC_FORM *result)
+{
     
     // Part 1 and 2
     double g = (leftElement->b + rightElement->b)/2;
@@ -203,20 +204,18 @@ void QF_CG::compose(QUADRATIC_FORM *leftElement, QUADRATIC_FORM *rightElement, Q
     int s = leftElement->a/w;
     int t = rightElement->a/w;
     int u = g/w;
-    
-    printf(">%f, %f, %d, %d, %d, %d, %d\n", g,h,w,j,s,t,u);
-    
-    //    printf("g: %f, h: %f, w: %d, s: %d, t: %d, u: %d\n", g, h, w, s, t, u);
+        
+//    printf("g: %f, h: %f, w: %d, s: %d, t: %d, u: %d\n", g, h, w, s, t, u);
     // Part 3 solving congurences
     generalSolutionCongruence leftSol = solveCongruence(t*g, (h*u+s*leftElement->c), s*t);
     
-    printf(">%d, %d\n", leftSol.a, leftSol.b);
+//    printf(">%d, %d\n", leftSol.a, leftSol.b);
     
     // Part 4 solving congurences
     generalSolutionCongruence rightSol = solveCongruence(t*leftSol.b, (h-t*leftSol.a), s);
     
     
-    printf(">%d, %d\n", rightSol.a, rightSol.b);
+//    printf(">%d, %d\n", rightSol.a, rightSol.b);
     
     // Part 5
     int k = leftSol.a + leftSol.b*rightSol.a;

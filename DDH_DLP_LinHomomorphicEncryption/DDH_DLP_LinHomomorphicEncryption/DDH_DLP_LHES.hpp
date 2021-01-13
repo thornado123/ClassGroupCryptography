@@ -12,9 +12,9 @@
 
 struct DDH_DLP_GROUP {
     
-    QF_CG g_of_maximal_order;
-    QF_CG f_of_kernel;
-    QF_CG gf_of_f_and_g;
+    QF_CG * g_of_maximal_order;
+    QF_CG * f_of_kernel;
+    QF_CG * gf_of_f_and_g;
     
     int bound, p;
     

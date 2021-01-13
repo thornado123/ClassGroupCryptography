@@ -9,45 +9,55 @@ void printElements2(QUADRATIC_FORM * f){
 
 
 int main(int argc, const char * argv[]) {
-   
-    DDH_DLP_GROUP h;
-    DDH_DLP_LES test;
-    test.gen(1, 1, &h);
-
-    QUADRATIC_FORM f;
-    f.setForm(11, 49, 55);
+    
+    /*
+     
+        We start by recreating the examples of Chapter 2 in the thesis.
+        The class group Cl(-23)
+     
+     */
+    printf("In the following example, we create a class group from the examples of chapter 2\n");
+    printf("We show how we can do composition and reudce elements\n");
+    printf("We also show how the idenity actually behave as it should\n");
+    
     QF_CG cg;
-
-    printElements2(&f);
-
-    cg.normalize(&f);
-
-    printElements2(&f);
-
-    assert(f.a == 11);
-    assert(f.b == 5);
-    assert(f.c == 1);
-
-    cg.reduce(&f);
-
-    assert(f.a == 1);
-    assert(f.b == 1);
-
-    std::cout << "finished reduction\n";
-
-    QUADRATIC_FORM q, result;
-    result.setForm(0, 0, 0);
-    q.setForm(2, 1, 3);
-    f.setForm(2, 1, 3);
-
-//    printf("Input q=(2, -1, 3) f=(2, 1, 3)\n");
-    cg.compose(&q, &f, &result);
-
+    QUADRATIC_FORM a, b, c, result;
+    
+    a.setForm(1, 1, 6);
+    b.setForm(2, 1, 3);
+    c.setForm(2, -1, 3);
+    
+    // We start with an example that a is the identity
+    printf("Now composing the identity (1,1,6) and (2,1,3)\n");
+    cg.compose(&a, &b, &result);
+    printf("The result of the composition of a and b should be b i.e. (2,1,3). Acutal Result: ");
     printElements2(&result);
-
+    
+    // We now use the composition on b and b. The non-reduced result should be (4,-3,2)
+    printf("\n\nNow composing (2,1,3) and (2,1,3)\n");
+    cg.compose(&b, &b, &result);
+    printf("The result of the composition of a and b should be b i.e. (4,-3,2). Acutal Result: ");
+    printElements2(&result);
+    
+    // We now want to reduce the element (4,-3,2)
+    printf("\n\nNow we want to reduce the form (4,-3,2)\n");
     cg.reduce(&result);
-
+    printf("The result of the reduction of (4,-3,2) should be (2,-1,3). Acutal Result: ");
     printElements2(&result);
+    
+    /*
+     
+        We now use the theory of Chapter 4 in the thesis to construct a DDH-DLP group
+     
+     */
+    
+    printf("\n\nIn the following we will create a DDH-DLP group of Chapter 4.\nWe will use the class group Cl(-39) into the class group of the non-maximal order with discriminat -351\n");
+    printf("As conductor we will use the prime p=3\n");
+    printf("We have that 53, is square free and p...\n");
+    
+    DDH_DLP_GROUP DDH_DLP_GROUP;
+    DDH_DLP_LES DDH_DLP_GROUP_GEN;
+    DDH_DLP_GROUP_GEN.gen(3, 13, &DDH_DLP_GROUP);
 
     return 0;
 }
